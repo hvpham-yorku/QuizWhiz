@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Question</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 8px;
+            width: 400px;
+            max-width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"], textarea {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .question-list {
+            margin-top: 20px;
+        }
+
+        .question-item {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .answer {
+            display: none;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+    </style>
+    <script>
+        function toggleAnswer(event) {
+            var answerElement = event.target.querySelector('.answer');
+            if (answerElement) {
+                answerElement.style.display = answerElement.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>Create a Question</h1>
+    <form action="/submit-question" method="post">
+        <label for="questionText">Question:</label>
+        <input type="text" id="questionText" name="questionText" required>
+
+        <label for="answer">Answer:</label>
+        <input type="text" id="answer" name="answer" required>
+
+        <label for="desc">Description:</label>
+        <textarea id="desc" name="desc" rows="3"></textarea>
+
+        <label for="tags">Tags (comma-separated):</label>
+        <input type="text" id="tags" name="tags">
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div class="question-list">
+        <h2>Submitted Questions</h2>
+        <ul>
+            <li th:each="question : ${questions}" class="question-item" onclick="toggleAnswer(event)">
+                <div>
+                    <span th:text="'Q: ' + ${question.questionText}"></span>
+                </div>
+                <div>
+                    <span th:text="'Desc: ' + ${question.desc}"></span>
+                </div>
+                <div>
+                    <span th:text="'Tags: ' + ${question.tags}"></span>
+                </div>
+                <div class="answer">
+                    <span th:text="'A: ' + ${question.answer}"></span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
