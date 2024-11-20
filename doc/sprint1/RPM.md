@@ -14,9 +14,9 @@ The release will focus on the following epics/key features:
 - **Registration Page:** Allow new users to register for accounts.
 
 ## Participants
-- **TL:** Responsible for "Different Question Types" and "Basic Question Creation."
-- **AK:** Responsible for "Importing Notes."
-- **AD:** Responsible for "Quiz Creation," "Database Schema Design," "Login Page," and "Registration Page."
+- **Tristan Lee:** Responsible for "Different Question Types" and "Basic Question Creation."
+- **Ashvin Kawleswaran:** Responsible for "Importing Notes."
+- **Adrian Sam Daliri:** Responsible for "Quiz Creation," "Database Schema Design," "Login Page," and "Registration Page."
 
 ## References to User Stories
 Each feature corresponds to specific user stories documented in the Trello board, such as:
