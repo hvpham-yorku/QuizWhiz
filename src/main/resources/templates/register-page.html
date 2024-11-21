@@ -3,6 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
+    <!--Navbar styles-->
+    <style>
+        .navbar {
+            background-color: #6f42c1;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            justify-content: space-between;
+        }
+        .navbar-logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+        }
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .navbar-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -94,6 +125,10 @@
     </style>
 </head>
 <body>
+<!-- Navbar -->
+<div class="navbar">
+    <div class="navbar-logo">QuizWhiz</div>
+</div>
 
 <div class="container">
     <h2>Create an Account</h2>
