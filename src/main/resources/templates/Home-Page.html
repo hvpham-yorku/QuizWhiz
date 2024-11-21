@@ -2,11 +2,128 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Home</title>
+    <title>Dashboard</title>
+    <!--Navbar styles-->
+    <style>
+        .navbar {
+            background-color: #6f42c1;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            justify-content: space-between;
+        }
+        .navbar-logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+        }
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .navbar-links a:hover {
+            text-decoration: underline;
+        }
+        </style>
+
+
+        <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: 36px;
+            color: #6f42c1;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .dashboard-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .dashboard-card h3 {
+            margin-top: 0;
+            color: #6f42c1;
+        }
+        .dashboard-card p {
+            color: #333;
+        }
+        .dashboard-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .dashboard-card ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .dashboard-card ul li:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <body>
-<h1 th:text="${welcomeMessage}"></h1>
-<h2>Thanks for joining QuizWhiz</h2>
+<!-- Navbar -->
+<div class="navbar">
+    <div class="navbar-logo">QuizWhiz</div>
+    <div class="navbar-links">
+        <a href="/my-quizzes">My Quizzes</a>
+        <a href="/my-question-bank">My Question Bank</a>
+    </div>
+</div>
 
+<!-- Dashboard -->
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1 th:text="${welcomeMessage}">Welcome to QuizWhiz!</h1>
+        <h2>Thanks for joining QuizWhiz</h2>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Recent Quizzes -->
+        <div class="dashboard-card">
+            <h3>Recent Quizzes</h3>
+            <ul>
+                <li>General Knowledge Quiz - Score: 85%</li>
+                <li>Math Quiz - Score: 90%</li>
+                <li>Science Trivia - Score: 70%</li>
+            </ul>
+        </div>
+
+        <!-- User Stats -->
+        <div class="dashboard-card">
+            <h3>Your Stats</h3>
+            <p><strong>Quizzes Completed:</strong> 12</p>
+            <p><strong>Average Score:</strong> 82%</p>
+            <p><strong>Top Category:</strong> History</p>
+        </div>
+
+    </div>
+</div>
 </body>
 </html>
