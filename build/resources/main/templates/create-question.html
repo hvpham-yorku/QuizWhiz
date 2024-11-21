@@ -1,136 +1,196 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Question</title>
     <style>
+        /* Global Styles */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            background-color: #f4f7fa;
             margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1, h2 {
             color: #333;
         }
 
         .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Form Styles */
+        .form-container {
             background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 20px;
             border-radius: 8px;
-            width: 400px;
-            max-width: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
-        h1 {
-            text-align: center;
-            color: #4CAF50;
+        .form-container label {
+            font-size: 1.1em;
+            color: #333;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        label {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"], textarea {
+        .form-container input,
+        .form-container textarea,
+        .form-container button {
+            width: 100%;
             padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        button {
-            padding: 10px;
-            border: none;
-            background-color: #4CAF50;
-            color: white;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .question-list {
-            margin-top: 20px;
-        }
-
-        .question-item {
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .answer {
-            display: none;
             margin-top: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+
+        .form-container button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Questions List Styles */
+        .question-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-header {
+            font-size: 1.2em;
             font-weight: bold;
             color: #333;
         }
 
-    </style>
-    <script>
-        function toggleAnswer(event) {
-            var answerElement = event.target.querySelector('.answer');
-            if (answerElement) {
-                answerElement.style.display = answerElement.style.display === 'block' ? 'none' : 'block';
-            }
+        .answer {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+            display: none; /* Initially hidden */
         }
-    </script>
+
+        .tags {
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .tags span {
+            background-color: #e0e0e0;
+            padding: 4px 8px;
+            margin-right: 5px;
+            border-radius: 4px;
+        }
+
+        .show-answer-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .show-answer-btn:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
+
 <div class="container">
-    <h1>Create a Question</h1>
-    <form action="/submit-question" method="post">
-        <label for="questionText">Question:</label>
-        <input type="text" id="questionText" name="questionText" required>
+    <header>
+        <h1>Create New Question</h1>
+        <nav>
+            <a href="/logout" style="text-decoration: none; color: #007bff;">Logout</a> <!-- Example logout link -->
+        </nav>
+    </header>
 
-        <label for="answer">Answer:</label>
-        <input type="text" id="answer" name="answer" required>
+    <section class="form-container">
+        <!-- Form for creating a new question -->
+        <form action="/create-question" method="POST">
+            <div>
+                <label for="questionText">Question Text:</label>
+                <input type="text" id="questionText" name="questionText" placeholder="Enter the question" required>
+            </div>
+            <div>
+                <label for="answer">Answer:</label>
+                <input type="text" id="answer" name="answer" placeholder="Enter the answer" required>
+            </div>
+            <div>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" placeholder="Enter a description" rows="4"></textarea>
+            </div>
+            <div>
+                <label for="tags">Tags (comma-separated):</label>
+                <input type="text" id="tags" name="tags" placeholder="Enter tags" />
+            </div>
+            <div>
+                <button type="submit">Create Question</button>
+            </div>
+        </form>
+    </section>
 
-        <label for="desc">Description:</label>
-        <textarea id="desc" name="desc" rows="3"></textarea>
-
-        <label for="tags">Tags (comma-separated):</label>
-        <input type="text" id="tags" name="tags">
-
-        <button type="submit">Submit</button>
-    </form>
-
-    <div class="question-list">
-        <h2>Submitted Questions</h2>
-        <ul>
-            <li th:each="question : ${questions}" class="question-item" onclick="toggleAnswer(event)">
+    <section>
+        <h2>Your Existing Questions</h2>
+        <!-- Loop through each question object passed to the model -->
+        <div th:each="question : ${questions}">
+            <div class="question-card">
+                <div class="question-header">
+                    [[${question.questionText}]]
+                </div>
+                <!-- Description Above Tags -->
                 <div>
-                    <span th:text="'Q: ' + ${question.questionText}"></span>
+                    <strong>Description: </strong>[[${question.description}]]
                 </div>
-                <div>
-                    <span th:text="'Desc: ' + ${question.desc}"></span>
+                <div class="tags">
+                    <strong>Tags: </strong>
+                    <span th:each="tag : ${question.tags}" th:text="${tag}">Tag</span>
                 </div>
-                <div>
-                    <span th:text="'Tags: ' + ${question.tags}"></span>
+                <!-- Button to show/hide answer -->
+                <button type="button" class="show-answer-btn" th:id="${question.id}"  onclick="toggleAnswer('answer-' + id)">Show Answer</button>
+                <!-- Dynamically generated ID for each answer -->
+                <div class="answer" th:id="'answer-' + ${question.id}">
+                    <strong>Answer: </strong>[[${question.answer}]]
                 </div>
-                <div class="answer">
-                    <span th:text="'A: ' + ${question.answer}"></span>
-                </div>
-            </li>
-        </ul>
-    </div>
+            </div>
+        </div>
+    </section>
 </div>
+
+<!-- JavaScript to handle the toggle functionality -->
+<script>
+    function toggleAnswer(answerId, button) {
+        const answerElement = document.getElementById(answerId);
+
+        if (answerElement) {
+            // Check the current display style and toggle
+            if (answerElement.style.display === "none" || answerElement.style.display === "") {
+                answerElement.style.display = "block";  // Show the answer
+                button.innerHTML = "Hide Answer";  // Change button text
+            } else {
+                answerElement.style.display = "none";  // Hide the answer
+                button.innerHTML = "Show Answer";  // Change button text
+            }
+        } else {
+            console.log("Answer element not found for ID: " + answerId);
+        }
+    }
+</script>
+
 </body>
 </html>

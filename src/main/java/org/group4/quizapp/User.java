@@ -1,7 +1,5 @@
 package org.group4.quizapp;
 
-import jakarta.persistence.*;
-
 //@Entity
 //@Table(name = "users")
 public class User {

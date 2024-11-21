@@ -1,22 +1,25 @@
 package org.group4.quizapp;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Question {
-
+    private Long id;
     private String questionText;
     private String answer;
-    private String desc; // New description attribute
-    private ArrayList<String> tags; // New tags attribute
+    private String description;
+    private List<String> tags = new ArrayList<>(); // Initialize as an empty list
+    private Long userId; // Add userId field to associate the question with a user
 
-    public Question(String questionText, String answer, String desc, ArrayList<String> tags) {
-        this.questionText = questionText;
-        this.answer = answer;
-        this.desc = desc;
-        this.tags = tags;
+    // Getters and setters
+    public Long getId() {
+        return id;
     }
 
-    // Getters and Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getQuestionText() {
         return questionText;
     }
@@ -33,19 +36,31 @@ public class Question {
         this.answer = answer;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesc(String desc) {
-        this.desc = desc;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public ArrayList<String> getTags() {
+    public List<String> getTags() {
         return tags;
     }
 
-    public void setTags(ArrayList<String> tags) {
+    public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public void addTag(String tag) {
+        this.tags.add(tag);
     }
 }
