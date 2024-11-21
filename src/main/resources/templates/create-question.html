@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Question</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Form Styles */
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-container label {
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .form-container input,
+        .form-container textarea,
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+
+        .form-container button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Questions List Styles */
+        .question-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .answer {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+            display: none; /* Initially hidden */
+        }
+
+        .tags {
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .tags span {
+            background-color: #e0e0e0;
+            padding: 4px 8px;
+            margin-right: 5px;
+            border-radius: 4px;
+        }
+
+        .show-answer-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .show-answer-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Create New Question</h1>
+        <nav>
+            <a href="/logout" style="text-decoration: none; color: #007bff;">Logout</a> <!-- Example logout link -->
+        </nav>
+    </header>
+
+    <section class="form-container">
+        <!-- Form for creating a new question -->
+        <form action="/create-question" method="POST">
+            <div>
+                <label for="questionText">Question Text:</label>
+                <input type="text" id="questionText" name="questionText" placeholder="Enter the question" required>
+            </div>
+            <div>
+                <label for="answer">Answer:</label>
+                <input type="text" id="answer" name="answer" placeholder="Enter the answer" required>
+            </div>
+            <div>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" placeholder="Enter a description" rows="4"></textarea>
+            </div>
+            <div>
+                <label for="tags">Tags (comma-separated):</label>
+                <input type="text" id="tags" name="tags" placeholder="Enter tags" />
+            </div>
+            <div>
+                <button type="submit">Create Question</button>
+            </div>
+        </form>
+    </section>
+
+    <section>
+        <h2>Your Existing Questions</h2>
+        <!-- Loop through each question object passed to the model -->
+        <div th:each="question : ${questions}">
+            <div class="question-card">
+                <div class="question-header">
+                    [[${question.questionText}]]
+                </div>
+                <!-- Description Above Tags -->
+                <div>
+                    <strong>Description: </strong>[[${question.description}]]
+                </div>
+                <div class="tags">
+                    <strong>Tags: </strong>
+                    <span th:each="tag : ${question.tags}" th:text="${tag}">Tag</span>
+                </div>
+                <!-- Button to show/hide answer -->
+                <button type="button" class="show-answer-btn" th:id="${question.id}"  onclick="toggleAnswer('answer-' + id)">Show Answer</button>
+                <!-- Dynamically generated ID for each answer -->
+                <div class="answer" th:id="'answer-' + ${question.id}">
+                    <strong>Answer: </strong>[[${question.answer}]]
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- JavaScript to handle the toggle functionality -->
+<script>
+    function toggleAnswer(answerId, button) {
+        const answerElement = document.getElementById(answerId);
+
+        if (answerElement) {
+            // Check the current display style and toggle
+            if (answerElement.style.display === "none" || answerElement.style.display === "") {
+                answerElement.style.display = "block";  // Show the answer
+                button.innerHTML = "Hide Answer";  // Change button text
+            } else {
+                answerElement.style.display = "none";  // Hide the answer
+                button.innerHTML = "Show Answer";  // Change button text
+            }
+        } else {
+            console.log("Answer element not found for ID: " + answerId);
+        }
+    }
+</script>
+
+</body>
+</html>
