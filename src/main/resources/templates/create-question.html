@@ -4,13 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Question</title>
+    <!--Navbar styles-->
+    <style>
+        .navbar {
+            background-color: #6f42c1;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            justify-content: space-between;
+        }
+        .navbar-logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .navbar-logo a{
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+        }
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .navbar-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+
     <style>
         /* Global Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f7fa;
             margin: 0;
-            padding: 20px;
             box-sizing: border-box;
         }
 
@@ -139,6 +175,14 @@
     </style>
 </head>
 <body>
+<!-- Navbar -->
+<div class="navbar">
+    <div class="navbar-logo"><a th:href="@{/home}">QuizWhiz</a></div>
+    <div class="navbar-links">
+        <a th:href="@{/create-quiz}">My Quizzes</a>
+        <a th:href="@{/create-question}">My Question Bank</a>
+    </div>
+</div>
 
 <div class="container">
     <header>
