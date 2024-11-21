@@ -108,6 +108,34 @@
         .show-answer-btn:hover {
             background-color: #218838;
         }
+
+        .edit-btn {
+            background-color: #ffc107;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .edit-btn:hover {
+            background-color: #e0a800;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -162,13 +190,20 @@
                     <span th:each="tag : ${question.tags}" th:text="${tag}">Tag</span>
                 </div>
                 <!-- Button to show/hide answer -->
-                <button type="button" class="show-answer-btn" th:id="${question.id}"  onclick="toggleAnswer('answer-' + id)">Show Answer</button>
+                <button type="button" class="show-answer-btn" th:id="${question.id}" onclick="toggleAnswer('answer-' + id, this)">Show Answer</button>
                 <!-- Dynamically generated ID for each answer -->
                 <div class="answer" th:id="'answer-' + ${question.id}">
                     <strong>Answer: </strong>[[${question.answer}]]
                 </div>
+
+                <!-- Delete Button -->
+                <form action="/create-question/delete" method="POST" style="display: inline-block;">
+                    <input type="hidden" name="id" th:value="${question.id}">
+                    <button type="submit" class="delete-btn">Delete</button>
+                </form>
             </div>
         </div>
+
     </section>
 </div>
 
