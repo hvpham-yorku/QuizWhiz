@@ -27,9 +27,7 @@ public class QuestionController {
     // Method to show the form for creating a new question and display user's existing questions
     @GetMapping
     public String showCreateQuestionForm(Model model, HttpSession session) {
-        // Fetch user ID from session
         Long userId = (Long) session.getAttribute("id");
-
         if (userId == null) {
             return "redirect:/login"; // Redirect to login page if user is not logged in
         }
@@ -46,11 +44,10 @@ public class QuestionController {
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
                         Question question = new Question();
-                        question.setId(resultSet.getLong("id"));  // Set the ID for each question
+                        question.setId(resultSet.getLong("id"));
                         question.setQuestionText(resultSet.getString("question_text"));
                         question.setAnswer(resultSet.getString("answer"));
                         question.setDescription(resultSet.getString("description"));
-                        // Convert the comma-separated tags back into a list
                         String tagsString = resultSet.getString("tags");
                         if (tagsString != null && !tagsString.isEmpty()) {
                             question.setTags(new ArrayList<>(Arrays.asList(tagsString.split(","))));
@@ -61,17 +58,16 @@ public class QuestionController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return "error-page"; // Show an error page if something goes wrong
+            return "error-page";
         }
 
-        model.addAttribute("questions", questions); // Add questions to model
-        return "create-question"; // Return to the page to display the form and existing questions
+        model.addAttribute("questions", questions);
+        return "create-question";
     }
 
     // Method to handle the creation of a new question
     @PostMapping
     public String createQuestion(@ModelAttribute("questionForm") Question questionForm, HttpSession session) {
-        // Get user ID from session
         Long userId = (Long) session.getAttribute("id");
         if (userId == null) {
             return "redirect:/login";  // Redirect to login page if user is not logged in
@@ -87,22 +83,41 @@ public class QuestionController {
                 preparedStatement.setString(2, questionForm.getQuestionText());
                 preparedStatement.setString(3, questionForm.getAnswer());
                 preparedStatement.setString(4, questionForm.getDescription());
-
-                // Convert the tags list into a comma-separated string and store it
-                if (questionForm.getTags() != null && !questionForm.getTags().isEmpty()) {
-                    preparedStatement.setString(5, String.join(",", questionForm.getTags()));
-                } else {
-                    preparedStatement.setString(5, ""); // If no tags, store an empty string
-                }
-
+                preparedStatement.setString(5, String.join(",", questionForm.getTags()));
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return "error-page"; // Show an error page if something goes wrong
+            return "error-page";
         }
 
-        // Redirect back to the same page after adding the new question
+        return "redirect:/create-question";
+    }
+
+    // Method to delete a question
+    @PostMapping("/delete")
+    public String deleteQuestion(@RequestParam("id") Long questionId, HttpSession session) {
+        Long userId = (Long) session.getAttribute("id");
+        if (userId == null) {
+            return "redirect:/login"; // Redirect to login page if user is not logged in
+        }
+
+        // Delete the question from the database
+        try (Connection connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword)) {
+            String query = "DELETE FROM questions WHERE id = ? AND user_id = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setLong(1, questionId);
+                preparedStatement.setLong(2, userId);
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected == 0) {
+                    return "error-page"; // Show an error page if no rows were affected
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "error-page";
+        }
+
         return "redirect:/create-question";
     }
 }
