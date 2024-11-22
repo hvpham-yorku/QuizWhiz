@@ -42,101 +42,108 @@
     </style>
 
     <style>
+        /* Global Styles */
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
             margin: 0;
-
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        .container {
-            width: 80%;
-            margin: 20px auto;
-            background-color: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-
+            box-sizing: border-box;
         }
 
         h1, h2 {
             color: #333;
         }
 
-        .form-section {
-            margin-bottom: 15px;
+        .container {
+            width: 80%;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
+        /* Form Styles */
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
 
-        input[type="text"], textarea, select {
+        .form-container label {
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .form-container input,
+        .form-container textarea,
+        .form-container button {
             width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        button {
-            padding: 10px 15px;
-            background-color: #4CAF50; /* Green color */
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        table th, table td {
             padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        .actions button {
-            background-color: #f44336;
-            border-radius: 4px;
-        }
-
-        .actions button:hover {
-            background-color: #d32f2f;
-        }
-
-        #answerDropdown, #answerText, #optionsField {
-            display: none;
-        }
-
-        .toggle-answer-btn {
-            background-color: #28a745; /* Green color */
-            border: none;
-            color: white;
-            padding: 10px;
-            cursor: pointer;
             margin-top: 10px;
             border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1em;
         }
 
-        .toggle-answer-btn:hover {
+        .form-container button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Questions List Styles */
+        .question-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-header {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .answer {
+            margin-top: 10px;
+            font-style: italic;
+            color: #555;
+            display: none; /* Initially hidden */
+        }
+
+        .tags {
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .tags span {
+            background-color: #e0e0e0;
+            padding: 4px 8px;
+            margin-right: 5px;
+            border-radius: 4px;
+        }
+
+        .show-answer-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .show-answer-btn:hover {
             background-color: #218838;
         }
-
-        .answer-section {
-            display: none;
-        }
-
 
         .edit-btn {
             background-color: #ffc107;
@@ -165,52 +172,10 @@
         .delete-btn:hover {
             background-color: #c82333;
         }
-
     </style>
-    <script>
-        // Toggle answer visibility for a specific question based on its ID
-        function toggleAnswerSection(questionId) {
-            console.log(questionId);
-            var answerSection = document.getElementById('answerSection_' + questionId);
-            if (answerSection.style.display === 'none' || answerSection.style.display === '') {
-                answerSection.style.display = 'block';
-            } else {
-                answerSection.style.display = 'none';
-            }
-        }
-
-        function toggleFields() {
-            var type = document.getElementById('type').value;
-
-            // Initially hide all fields
-            document.getElementById('answerDropdown').style.display = 'none';
-            document.getElementById('answerText').style.display = 'none';
-            document.getElementById('optionsField').style.display = 'none';
-            document.getElementById('answerTextt').innerText = "Answer: ";
-
-            // Show fields based on selected question type
-            if (type === 'True Or False') {
-                document.getElementById('answerDropdown').style.display = 'block';
-                document.getElementById('answerText').style.display = 'none';
-            } else if (type === 'Multiple Choice' || type === 'Multi Select') {
-                document.getElementById('optionsField').style.display = 'block';
-                document.getElementById('answerText').style.display = 'block';
-
-                if (type === 'Multi Select') {
-                    document.getElementById('answerTextt').innerText = "Enter comma-separated values: ";
-                }
-            } else if (type === 'Fill In The Blank' || type === 'Flashcard') {
-                document.getElementById('answerText').style.display = 'block';
-            }
-        }
-
-        window.onload = function() {
-            toggleFields();
-        };
-    </script>
 </head>
 <body>
-  <!-- Navbar -->
+<!-- Navbar -->
 <div class="navbar">
     <div class="navbar-logo"><a th:href="@{/home}">QuizWhiz</a></div>
     <div class="navbar-links">
@@ -218,101 +183,93 @@
         <a th:href="@{/create-question}">My Question Bank</a>
     </div>
 </div>
+
 <div class="container">
-    <h1>Create a New Question</h1>
+    <header>
+        <h1>Create New Question</h1>
+        <nav>
+            <a href="/logout" style="text-decoration: none; color: #007bff;">Logout</a> <!-- Example logout link -->
+        </nav>
+    </header>
 
-    <form action="/create-question" method="POST">
-        <div class="form-section">
-            <label for="type">Select Question Type:</label>
-            <select id="type" name="type" onchange="toggleFields()">
-                <option value="Flashcard" th:selected="${type == 'Flashcard'}">Flashcard</option>
-                <option value="Fill In The Blank" th:selected="${type == 'Fill In The Blank'}">Fill In The Blank</option>
-                <option value="Open Ended" th:selected="${type == 'Open Ended'}">Open Ended</option>
-                <option value="Multiple Choice" th:selected="${type == 'Multiple Choice'}">Multiple Choice</option>
-                <option value="Multi Select" th:selected="${type == 'Multi Select'}">Multi Select</option>
-                <option value="True Or False" th:selected="${type == 'True Or False'}">True Or False</option>
-            </select>
-        </div>
+    <section class="form-container">
+        <!-- Form for creating a new question -->
+        <form action="/create-question" method="POST">
+            <div>
+                <label for="questionText">Question Text:</label>
+                <input type="text" id="questionText" name="questionText" placeholder="Enter the question" required>
+            </div>
+            <div>
+                <label for="answer">Answer:</label>
+                <input type="text" id="answer" name="answer" placeholder="Enter the answer" required>
+            </div>
+            <div>
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" placeholder="Enter a description" rows="4"></textarea>
+            </div>
+            <div>
+                <label for="tags">Tags (comma-separated):</label>
+                <input type="text" id="tags" name="tags" placeholder="Enter tags" />
+            </div>
+            <div>
+                <button type="submit">Create Question</button>
+            </div>
+        </form>
+    </section>
 
-
-        <div class="form-section">
-            <label for="questionText">Question Text:</label>
-            <input type="text" id="questionText" name="questionText">
-        </div>
-
-        <!-- Answer fields for specific question types -->
-        <!-- True Or False Answer Dropdown -->
-        <div class="form-section" id="answerDropdown" style="display: none;">
-            <label for="trueFalseAnswer">Answer:</label>
-            <select id="trueFalseAnswer" name="answer">
-                <option value="True" th:selected="${answer == 'True'}">True</option>
-                <option value="False" th:selected="${answer == 'False'}">False</option>
-            </select>
-        </div>
-
-        <!-- Text Input for Answer for other question types -->
-        <div class="form-section" id="answerText" style="display: none;">
-            <label for="textAnswer" id="answerTextt">Answer:</label>
-            <input type="text" id="textAnswer" name="answer">
-        </div>
-
-        <div class="form-section">
-            <label for="description">Description:</label>
-            <textarea id="description" name="description"></textarea>
-        </div>
-
-        <div class="form-section">
-            <label for="tags">Tags (comma separated):</label>
-            <input type="text" id="tags" name="tags">
-        </div>
-
-        <div class="form-section" id="optionsField" style="display: none;">
-            <label for="options">Options (comma separated):</label>
-            <input type="text" id="options" name="options" placeholder="Option 1, Option 2, Option 3">
-        </div>
-
-        <button type="submit">Submit Question</button>
-    </form>
-
-    <hr>
-
-    <h2>Your Questions</h2>
-    <table>
-        <thead>
-        <tr>
-            <th>Question Text</th>
-            <th>Description</th>
-            <th>Tags</th>
-            <th>Type</th>
-            <th>Options</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="question : ${questions}">
-            <td th:text="${question.questionText}">Sample Question</td>
-            <td th:text="${question.description}">Sample Description</td>
-            <td th:text="${#strings.arrayJoin(question.tags, ', ')}">Sample Tags</td>
-            <td th:text="${question.type}">Flashcard</td>
-            <td th:text="${#strings.arrayJoin(question.options, ', ')}">Sample Options</td>
-            <td class="actions">
-                <!-- Toggle Answer Button -->
-                <button class="toggle-answer-btn" th:id="${question.id}" onclick="toggleAnswerSection(id)">Toggle Answer</button>
-
-                <form action="/create-question/delete" method="POST">
-                    <input type="hidden" name="id" th:value="${question.id}">
-                    <button type="submit">Delete</button>
-                </form>
-
-                <!-- Answer Section for Each Question -->
-                <div class="answer-section" th:id="'answerSection_' + ${question.id}">
+    <section>
+        <h2>Your Existing Questions</h2>
+        <!-- Loop through each question object passed to the model -->
+        <div th:each="question : ${questions}">
+            <div class="question-card">
+                <div class="question-header">
+                    [[${question.questionText}]]
+                </div>
+                <!-- Description Above Tags -->
+                <div>
+                    <strong>Description: </strong>[[${question.description}]]
+                </div>
+                <div class="tags">
+                    <strong>Tags: </strong>
+                    <span th:each="tag : ${question.tags}" th:text="${tag}">Tag</span>
+                </div>
+                <!-- Button to show/hide answer -->
+                <button type="button" class="show-answer-btn" th:id="${question.id}" onclick="toggleAnswer('answer-' + id, this)">Show Answer</button>
+                <!-- Dynamically generated ID for each answer -->
+                <div class="answer" th:id="'answer-' + ${question.id}">
                     <strong>Answer: </strong>[[${question.answer}]]
                 </div>
 
-            </td>
-        </tr>
-        </tbody>
-    </table>
+                <!-- Delete Button -->
+                <form action="/create-question/delete" method="POST" style="display: inline-block;">
+                    <input type="hidden" name="id" th:value="${question.id}">
+                    <button type="submit" class="delete-btn">Delete</button>
+                </form>
+            </div>
+        </div>
+
+    </section>
 </div>
+
+<!-- JavaScript to handle the toggle functionality -->
+<script>
+    function toggleAnswer(answerId, button) {
+        const answerElement = document.getElementById(answerId);
+
+        if (answerElement) {
+            // Check the current display style and toggle
+            if (answerElement.style.display === "none" || answerElement.style.display === "") {
+                answerElement.style.display = "block";  // Show the answer
+                button.innerHTML = "Hide Answer";  // Change button text
+            } else {
+                answerElement.style.display = "none";  // Hide the answer
+                button.innerHTML = "Show Answer";  // Change button text
+            }
+        } else {
+            console.log("Answer element not found for ID: " + answerId);
+        }
+    }
+</script>
+
 </body>
 </html>
