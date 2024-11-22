@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,17 @@ public class ImportNoteController {
 
     @Value("${spring.datasource.password}")
     private String databasePassword;
+
+    @GetMapping("/upload-notes")
+    public String uploadNotes(HttpSession session, Model model) {
+        String username = (String) session.getAttribute("username");
+        String email = (String) session.getAttribute("userEmail");
+
+        if (username == null) {
+            return "redirect:/login"; // Redirect to log in if session is invalid
+        }
+        return "Import-Notes-Page";
+    }
 
     @PostMapping("/upload-notes")
     public String handleUpload(
