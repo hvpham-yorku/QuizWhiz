@@ -33,6 +33,10 @@
         .navbar-links a:hover {
             text-decoration: underline;
         }
+        .navbar-logo a{
+            text-decoration: none;
+            color: inherit;
+        }
     </style>
 
 
@@ -104,8 +108,7 @@
 <body>
 <!-- Navbar -->
 <div class="navbar">
-    <div class="navbar-logo">QuizWhiz</div>
-</div>
+    <div class="navbar-logo"><a th:href="@{/}">QuizWhiz</a></div></div>
 
 
 <div class="container">

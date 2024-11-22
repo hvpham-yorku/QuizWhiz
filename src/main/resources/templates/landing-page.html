@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to QuizWhiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* Navbar styles */
+        .navbar {
+            background-color: #6f42c1;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            justify-content: space-between;
+        }
+
+        .navbar-logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .navbar-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+        .hero {
+            background-color: #6f42c1;
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .hero .btn {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .hero .btn:hover {
+            background-color: #ff3b3b;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 40px 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .feature {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            width: 300px;
+        }
+
+        .feature img {
+            max-width: 80px;
+            margin-bottom: 20px;
+        }
+
+        .feature h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #6f42c1;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<div class="navbar">
+    <div class="navbar-logo">QuizWhiz</div>
+    <div class="navbar-links">
+        <a href="#">Home</a>
+        <a href="#features">Features</a>
+        <a th:href="@{/register}">Register</a>
+    </div>
+</div>
+
+<!-- Hero Section -->
+<div class="hero">
+    <h1>Welcome to QuizWhiz</h1>
+    <p>Challenge yourself and others with engaging quizzes!</p>
+    <a th:href="@{/register}" class="btn">Get Started</a>
+</div>
+
+<!-- Features Section -->
+<div id="features" class="features">
+    <div class="feature">
+        <img src="https://cdn-icons-png.flaticon.com/512/7128/7128236.png" alt="Create">
+        <h3>Create Quizzes</h3>
+        <p>Easily create custom quizzes to challenge your friends.</p>
+    </div>
+    <div class="feature">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQiBKwOQ-fRTP9ay7YQCrb06mt67QUaZ5riuA&s" alt="Challenge">
+        <h3>Challenge Friends</h3>
+        <p>Invite friends and compete to top the leaderboard.</p>
+    </div>
+    <div class="feature">
+        <img src="https://cdn-icons-png.flaticon.com/512/5236/5236796.png" alt="Learn">
+        <h3>Learn & Grow</h3>
+        <p>Improve your knowledge while having fun!</p>
+    </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    &copy; 2024 QuizWhiz. All rights reserved.
+</div>
+</body>
+</html>
