@@ -48,6 +48,7 @@ public class QuestionController {
 
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
+
                         Question question = mapResultSetToQuestion(resultSet);
                         questions.add(question);
                     }
@@ -55,7 +56,9 @@ public class QuestionController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+
             return "error-page"; // Redirect to an error page on database issues
+
         }
 
         model.addAttribute("questions", questions);
@@ -71,6 +74,7 @@ public class QuestionController {
                                  @RequestParam("tags") String tags,
                                  @RequestParam(value = "options", required = false) String options,
                                  HttpSession session) {
+
         Long userId = (Long) session.getAttribute("id");
 
         if (userId == null) {
@@ -87,6 +91,7 @@ public class QuestionController {
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             """;
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
                 preparedStatement.setLong(1, question.getUserId());
                 preparedStatement.setString(2, question.getQuestionText());
                 preparedStatement.setString(3, question.getAnswer());
@@ -95,6 +100,7 @@ public class QuestionController {
                 preparedStatement.setString(6, question.getType());
                 preparedStatement.setString(7, question.getOptions() != null ? String.join(",", question.getOptions()) : null);
                 preparedStatement.executeUpdate();
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
