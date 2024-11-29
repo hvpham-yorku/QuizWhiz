@@ -120,4 +120,64 @@ public class QuestionController {
 
         return "redirect:/create-question";
     }
+
+    @PostMapping("/filter-search")
+    public String filterAndSearchQuestions(
+            @RequestParam(value = "qText", required = false) String qText,
+            @RequestParam(value = "tagFilter", required = false) String tagFilter,
+            Model model, HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("id");
+        if (userId == null) {
+            return "redirect:/login"; // Redirect to login page if user is not logged in
+        }
+
+        List<Question> filteredQuestions = new ArrayList<>();
+
+        // Construct the query dynamically based on provided filters
+        StringBuilder queryBuilder = new StringBuilder("SELECT id, question_text, answer, description, tags FROM questions WHERE user_id = ?");
+        List<Object> parameters = new ArrayList<>();
+        parameters.add(userId);
+
+        if (qText != null && !qText.trim().isEmpty()) {
+            queryBuilder.append(" AND question_text LIKE ?");
+            parameters.add("%" + qText.trim() + "%");
+        }
+
+        if (tagFilter != null && !tagFilter.trim().isEmpty()) {
+            queryBuilder.append(" AND tags LIKE ?");
+            parameters.add("%" + tagFilter.trim() + "%");
+        }
+
+        try (Connection connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword);
+             PreparedStatement preparedStatement = connection.prepareStatement(queryBuilder.toString())) {
+
+            // Set query parameters dynamically
+            for (int i = 0; i < parameters.size(); i++) {
+                preparedStatement.setObject(i + 1, parameters.get(i));
+            }
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    Question question = new Question();
+                    question.setId(resultSet.getLong("id"));
+                    question.setQuestionText(resultSet.getString("question_text"));
+                    question.setAnswer(resultSet.getString("answer"));
+                    question.setDescription(resultSet.getString("description"));
+                    String tagsString = resultSet.getString("tags");
+                    if (tagsString != null && !tagsString.isEmpty()) {
+                        question.setTags(new ArrayList<>(Arrays.asList(tagsString.split(","))));
+                    }
+                    filteredQuestions.add(question);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "error-page";
+        }
+
+        // Pass the filtered results to the view
+        model.addAttribute("questions", filteredQuestions);
+        return "create-question"; // Render the same page with filtered results
+    }
 }
