@@ -120,6 +120,22 @@
             <button type="submit" class="btn" name="action" value="quiz">Quiz me</button>
         </div>
     </form>
+
+
+    <!-- AI Results Section -->
+    <!-- Flashcards -->
+    <div th:if="${flashcards}" class="flashcards">
+        <h3>Generated Flashcards:</h3>
+        <p th:text="${flashcards}"></p>
+    </div>
+
+    <!-- Quiz Questions -->
+    <div th:if="${questions}" class="quiz-questions">
+        <h3>Generated Quiz Questions:</h3>
+        <ul>
+            <li th:each="question : ${questions}" th:text="${question}"></li>
+        </ul>
+    </div>
 </div>
 
 </body>
