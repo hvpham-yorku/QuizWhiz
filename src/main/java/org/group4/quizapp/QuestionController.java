@@ -38,7 +38,7 @@ public class QuestionController {
 
         // Fetch user's questions from the database
         try (Connection connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword)) {
-            String query = "SELECT id, question_text, answer, description, tags FROM questions WHERE user_id = ?";
+            String query = "SELECT id, question_text, answer, description, tags, type, options FROM questions WHERE user_id = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setLong(1, userId);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -51,6 +51,11 @@ public class QuestionController {
                         String tagsString = resultSet.getString("tags");
                         if (tagsString != null && !tagsString.isEmpty()) {
                             question.setTags(new ArrayList<>(Arrays.asList(tagsString.split(","))));
+                        }
+                        question.setType(resultSet.getString("type")); // Set the type
+                        String optionsString = resultSet.getString("options");
+                        if (optionsString != null && !optionsString.isEmpty()) {
+                            question.setOptions(new ArrayList<>(Arrays.asList(optionsString.split(","))));
                         }
                         questions.add(question);
                     }
@@ -65,25 +70,51 @@ public class QuestionController {
         return "create-question";
     }
 
-    // Method to handle the creation of a new question
     @PostMapping
-    public String createQuestion(@ModelAttribute("questionForm") Question questionForm, HttpSession session) {
+    public String createQuestion(
+            @ModelAttribute("questionForm") Question questionForm,
+            @RequestParam(value = "options", required = false) List<String> options,
+            HttpSession session) {
+
         Long userId = (Long) session.getAttribute("id");
         if (userId == null) {
-            return "redirect:/login";  // Redirect to login page if user is not logged in
+            return "redirect:/login"; // Redirect to login page if user is not logged in
         }
 
         questionForm.setUserId(userId);
 
-        // Insert the new question into the database
+        // Handle options for multiple choice types
+        if (options == null || options.isEmpty()) {
+            questionForm.setOptions(new ArrayList<>()); // Empty list
+        } else {
+            questionForm.setOptions(options); // Set provided list
+        }
+
+        //Comma separated options for database storage
+        String serializedOptions = String.join(",", questionForm.getOptions());
+
+        // Adjust answer for True/False question type
+        if ("TrueFalse".equalsIgnoreCase(questionForm.getType())) {
+            if ((questionForm.getAnswer()).contains("True")) {
+                questionForm.setAnswer("True"); // Set to "True" if the answer contains True
+            } else if ((questionForm.getAnswer()).contains("False")) {
+                questionForm.setAnswer("False"); // Set to "False" if the answer contains False
+            } else {
+                questionForm.setAnswer("");
+            }
+        }
+
+        // Save to database
         try (Connection connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword)) {
-            String query = "INSERT INTO questions (user_id, question_text, answer, description, tags) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO questions (user_id, question_text, answer, description, tags, type, options) VALUES (?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setLong(1, questionForm.getUserId());
                 preparedStatement.setString(2, questionForm.getQuestionText());
                 preparedStatement.setString(3, questionForm.getAnswer());
                 preparedStatement.setString(4, questionForm.getDescription());
                 preparedStatement.setString(5, String.join(",", questionForm.getTags()));
+                preparedStatement.setString(6, questionForm.getType());
+                preparedStatement.setString(7, serializedOptions);
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {

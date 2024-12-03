@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,22 +26,20 @@ public class QuizController {
     private String databasePassword;
 
     // Show the quiz creation form
-    // Fetch and display the user's quizzes in addition to their question bank
     @GetMapping
     public String showQuizCreationForm(Model model, HttpSession session) {
-        // Fetch user ID from session
         Long userId = (Long) session.getAttribute("id");
 
         if (userId == null) {
-            return "redirect:/login"; // Redirect to login page if user is not logged in
+            return "redirect:/login";
         }
 
         List<Question> questionBank = new ArrayList<>();
         List<Quiz> quizzes = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword)) {
-            // Fetch questions belonging to the user
-            String questionQuery = "SELECT id, question_text FROM questions WHERE user_id = ?";
+            // Fetch questions
+            String questionQuery = "SELECT id, question_text, type FROM questions WHERE user_id = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(questionQuery)) {
                 preparedStatement.setLong(1, userId);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -48,6 +47,7 @@ public class QuizController {
                         Question question = new Question();
                         question.setId(resultSet.getLong("id"));
                         question.setQuestionText(resultSet.getString("question_text"));
+                        question.setType(resultSet.getString("type"));
                         questionBank.add(question);
                     }
                 }
@@ -68,17 +68,16 @@ public class QuizController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return "error-page"; // Show an error page if something goes wrong
+            return "error-page";
         }
 
-        // Add question bank and quizzes to the model
         model.addAttribute("questionBank", questionBank);
         model.addAttribute("quizzes", quizzes);
 
-        return "quiz-creation"; // Return the Thymeleaf quiz creation template
+        return "quiz-creation";
     }
 
-
+    // Create a new quiz
     @PostMapping
     public String createQuiz(
             @RequestParam("quizName") String quizName,
@@ -91,13 +90,12 @@ public class QuizController {
             return "redirect:/login";
         }
 
-        // Check if no questions are selected
         if (selectedQuestionIds == null || selectedQuestionIds.isEmpty()) {
             return "redirect:/create-quiz?error=no-questions-selected";
         }
 
         try (Connection connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword)) {
-            // Insert quiz into the quizzes table
+            // Insert quiz
             String insertQuizQuery = "INSERT INTO quizzes (user_id, quiz_name) VALUES (?, ?) RETURNING id";
             long quizId;
             try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuizQuery)) {
@@ -105,14 +103,14 @@ public class QuizController {
                 preparedStatement.setString(2, quizName);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
-                        quizId = resultSet.getLong(1); // Retrieve the generated quiz ID
+                        quizId = resultSet.getLong(1);
                     } else {
                         throw new SQLException("Failed to insert quiz, no ID obtained.");
                     }
                 }
             }
 
-            // Insert selected questions into the quiz_questions table
+            // Insert selected questions
             String insertQuizQuestionsQuery = "INSERT INTO quiz_questions (quiz_id, question_id) VALUES (?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuizQuestionsQuery)) {
                 for (Long questionId : selectedQuestionIds) {
@@ -124,16 +122,19 @@ public class QuizController {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            return "error-page"; // Show error page if something goes wrong
+            return "error-page";
         }
 
         return "redirect:/create-quiz";
     }
+
+    // View quiz details
     @GetMapping("/quiz-details")
     public String viewQuiz(
             @RequestParam("id") Long quizId,
             Model model,
             HttpSession session) {
+
         Long userId = (Long) session.getAttribute("id");
 
         if (userId == null) {
@@ -155,17 +156,17 @@ public class QuizController {
                         quiz.setId(resultSet.getLong("id"));
                         quiz.setName(resultSet.getString("quiz_name"));
                     } else {
-                        return "redirect:/create-quiz"; // Redirect if quiz not found or unauthorized
+                        return "redirect:/create-quiz";
                     }
                 }
             }
 
-            // Fetch questions with all details for the quiz
+            // Fetch questions with types and options directly from the `questions` table
             String questionQuery = """
-            SELECT q.id, q.question_text, q.answer, q.description, q.tags
-            FROM questions q
-            INNER JOIN quiz_questions qq ON q.id = qq.question_id
-            WHERE qq.quiz_id = ?
+        SELECT q.id, q.question_text, q.answer, q.description, q.tags, q.type, q.options
+        FROM questions q
+        INNER JOIN quiz_questions qq ON q.id = qq.question_id
+        WHERE qq.quiz_id = ?
         """;
             try (PreparedStatement preparedStatement = connection.prepareStatement(questionQuery)) {
                 preparedStatement.setLong(1, quizId);
@@ -176,7 +177,23 @@ public class QuizController {
                         question.setQuestionText(resultSet.getString("question_text"));
                         question.setAnswer(resultSet.getString("answer"));
                         question.setDescription(resultSet.getString("description"));
-                        question.setTags(Collections.singletonList(resultSet.getString("tags")));
+
+                        // Parse tags from a comma-separated string
+                        String tagsString = resultSet.getString("tags");
+                        if (tagsString != null && !tagsString.isEmpty()) {
+                            question.setTags(Arrays.asList(tagsString.split(",")));
+                        }
+
+                        question.setType(resultSet.getString("type"));
+
+                        // Parse options from a comma-separated string if the question is Multiple Choice
+                        if ("MultipleChoice".equalsIgnoreCase(question.getType())) {
+                            String optionsString = resultSet.getString("options");
+                            if (optionsString != null && !optionsString.isEmpty()) {
+                                question.setOptions(Arrays.asList(optionsString.split(",")));
+                            }
+                        }
+
                         questions.add(question);
                     }
                 }
@@ -189,7 +206,7 @@ public class QuizController {
         model.addAttribute("quiz", quiz);
         model.addAttribute("questions", questions);
 
-        return "quiz-view"; // Return the Thymeleaf template for viewing the quiz
+        return "quiz-view";
     }
 
 
