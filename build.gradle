@@ -29,6 +29,21 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.postgresql:postgresql:42.7.2'
 
+        //Dependency for Ai platform
+        implementation 'com.theokanning.openai-gpt3-java:client:0.12.0' // Replace with the latest version
+
+    //Dependency for pdf and docx file compatibility
+    implementation 'org.apache.pdfbox:pdfbox:2.0.27'//PDFs
+
+    implementation 'org.apache.poi:poi:5.2.3'//Docx
+    implementation 'org.apache.poi:poi-ooxml:5.2.3'
+
+    implementation 'com.theokanning.openai-gpt3-java:0.11.5' // Replace with the latest version
+
+
+
+
+
 }
 
 tasks.named('test') {

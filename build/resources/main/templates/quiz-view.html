@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${quiz.name}"></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #6f42c1;
+        }
+
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .question h2 {
+            margin: 0 0 10px;
+            color: #343a40;
+        }
+
+        .answer {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            text-align: center;
+        }
+
+        .correct {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .incorrect {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn {
+            display: inline-block;
+            margin: 5px 0;
+            padding: 10px 20px;
+            background-color: #6f42c1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #5a359c;
+        }
+
+        .btn-done {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #6f42c1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-done:hover {
+            background-color: #5a359c;
+        }
+
+        .flashcard {
+            cursor: pointer;
+            padding: 15px;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .flashcard .front, .flashcard .back {
+            display: none;
+        }
+
+        .flashcard .front.active, .flashcard .back.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${quiz.name}"></h1>
+
+    <div class="questions">
+        <div th:each="question : ${questions}" class="question">
+            <h2 th:text="'Question: ' + ${question.questionText}"></h2>
+
+            <div th:if="${question.type == 'MultipleChoice'}">
+                <strong>Options:</strong>
+                <ul>
+                    <li th:each="option : ${question.options}">
+                        <button class="btn"
+                                th:attr="onclick='checkAnswer(this, \'' + ${option} + '\', \'' + ${question.answer} + '\')'"
+                                th:text="${option}">
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <div th:if="${question.type == 'TrueFalse'}">
+                <button class="btn"
+                        th:attr="onclick='checkAnswer(this, \'True\', \'' + ${question.answer} + '\')'">
+                    True
+                </button>
+                <button class="btn"
+                        th:attr="onclick='checkAnswer(this, \'False\', \'' + ${question.answer} + '\')'">
+                    False
+                </button>
+            </div>
+
+            <div th:if="${question.type == 'FillInTheBlank'}">
+                <p>Fill in the blank:</p>
+                <input type="text" class="fill-in-input" placeholder="Your answer">
+                <button class="btn"
+                        th:attr="onclick='checkFillInTheBlank(this, \'' + ${question.answer} + '\')'">
+                    Submit Answer
+                </button>
+            </div>
+
+
+
+            <div th:if="${question.type == 'FlashCard'}">
+                <div class="flashcard" onclick="flipFlashcard(this)">
+                    <div class="front active">
+                        <p th:text="'Question: ' + ${question.questionText}"></p>
+                    </div>
+                    <div class="back">
+                        <p th:text="'Answer: ' + ${question.answer}"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="answer" id="answer-${question.id}">
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(questions)}">
+            <p>No questions available for this quiz.</p>
+        </div>
+    </div>
+
+    <a th:href="@{/create-quiz}" class="btn-done">Done</a>
+</div>
+
+<script>
+    function checkAnswer(button, selectedOption, correctAnswer) {
+        const parent = button.closest('.question');
+        const result = parent.querySelector('.answer');
+        if (!result) return;
+
+        if (selectedOption === correctAnswer) {
+            result.textContent = "Correct!";
+            result.className = 'answer correct';
+        } else {
+            result.textContent = "Incorrect! Correct Answer: " + correctAnswer;
+            result.className = 'answer incorrect';
+        }
+        result.style.display = 'block';
+    }
+
+    function flipFlashcard(card) {
+        const front = card.querySelector('.front');
+        const back = card.querySelector('.back');
+
+        if (front.classList.contains('active')) {
+            front.classList.remove('active');
+            back.classList.add('active');
+        } else {
+            front.classList.add('active');
+            back.classList.remove('active');
+        }
+    }
+
+
+
+    function checkFillInTheBlank(button, correctAnswer) {
+        const parent = button.closest('.question');
+        const input = parent.querySelector('.fill-in-input');
+        const result = parent.querySelector('.answer');
+
+        if (!input || !result) return;
+
+        const userAnswer = input.value.trim();
+
+        if (userAnswer.toLowerCase() === correctAnswer.toLowerCase()) {
+            result.textContent = "Correct!";
+            result.className = 'answer correct';
+        } else {
+            result.textContent = "Incorrect! Correct Answer: " + correctAnswer;
+            result.className = 'answer incorrect';
+        }
+        result.style.display = 'block';
+    }
+
+
+</script>
+</body>
+</html>
