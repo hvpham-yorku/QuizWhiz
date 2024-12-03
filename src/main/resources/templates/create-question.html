@@ -227,6 +227,40 @@
         </form>
     </section>
 
+    <section class="form-container">
+        <!-- Form for filtering and searching questions -->
+        <form action="/create-question/filter-search" method="POST">
+            <div>
+                <label for="qText">Search by Question Text:</label>
+                <input type="text" id="qText" name="qText" placeholder="Enter text to search">
+            </div>
+            <div>
+                <label for="tagFilter">Filter by Tags:</label>
+                <input type="text" id="tagFilter" name="tagFilter" placeholder="Enter tags (comma-separated)">
+            </div>
+            <div>
+                <label for="typeFilter">Filter by Question Type:</label>
+                <select id="typeFilter" name="typeFilter">
+                    <option value="">--Select Type--</option>
+                    <option value="FlashCard">Flash Card</option>
+                    <option value="MultipleChoice">Multiple Choice</option>
+                    <option value="MultiSelect">Multi Select</option>
+                    <option value="FillInTheBlank">Fill in the Blank</option>
+                    <option value="TrueFalse">True or False</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit">Search</button>
+            </div>
+        </form>
+
+        <!-- Button to return to all questions view -->
+        <form action="/create-question" method="GET" style="margin-top: 10px;">
+            <button type="submit">Show All Questions</button>
+        </form>
+    </section>
+
+
     <section>
         <h2>Your Existing Questions</h2>
         <!-- Loop through each question object passed to the model -->
@@ -236,6 +270,9 @@
                     [[${question.questionText}]]
                 </div>
                 <!-- Description Above Tags -->
+                <div>
+                    <strong>Type: </strong>[[${question.type}]]
+                </div>
                 <div>
                     <strong>Description: </strong>[[${question.description}]]
                 </div>
