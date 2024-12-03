@@ -7,39 +7,41 @@
     <!--Navbar styles-->
     <style>
         .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
             background-color: #6f42c1;
             color: white;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            justify-content: space-between;
-        }
-        .navbar-logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 0;
-        }
-
-        .navbar-logo a{
-            text-decoration: none;
-            color: inherit;
         }
 
         .navbar-links {
             display: flex;
             gap: 20px;
         }
-        .navbar-links a {
+
+        .navbar-btn {
             color: white;
             text-decoration: none;
-            font-size: 16px;
             font-weight: bold;
+            padding: 8px 15px;
+            border-radius: 5px;
+            background-color: #5a34a1;
+            transition: background-color 0.3s ease;
         }
-        .navbar-links a:hover {
-            text-decoration: underline;
+
+        .navbar-btn:hover {
+            background-color: #4e2c8a;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
         }
     </style>
+
 
     <style>
         /* Global Styles */
@@ -177,10 +179,11 @@
 <body>
 <!-- Navbar -->
 <div class="navbar">
-    <div class="navbar-logo"><a th:href="@{/home}">QuizWhiz</a></div>
+    <div class="navbar-logo">QuizWhiz</div>
     <div class="navbar-links">
-        <a th:href="@{/create-quiz}">My Quizzes</a>
-        <a th:href="@{/create-question}">My Question Bank</a>
+        <a th:href="@{/create-quiz}" class="navbar-btn">My Quizzes</a>
+        <a th:href="@{/create-question}" class="navbar-btn">My Question Bank</a>
+        <a th:href="@{/import-notes}" class="navbar-btn">Upload Your Notes</a>
     </div>
 </div>
 
