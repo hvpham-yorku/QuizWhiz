@@ -198,7 +198,7 @@
                 <input type="text" id="questionText" name="questionText" placeholder="Enter the question" required>
             </div>
             <div>
-                <label for="answer">Answer:</label>
+                <label id="answer-label" for="answer">Answer:</label>
                 <input type="text" id="answer" name="answer" placeholder="Enter the answer" required>
             </div>
             <div>
@@ -209,6 +209,18 @@
                 <label for="tags">Tags (comma-separated):</label>
                 <input type="text" id="tags" name="tags" placeholder="Enter tags" />
             </div>
+
+            <label for="type">Question Type:</label>
+            <select name="type" id="type" required>
+                <option value="FlashCard">Flash Card</option>
+                <option value="MultipleChoice">Multiple Choice</option>
+                <option value="MultiSelect">Multi Select</option>
+                <option value="FillInTheBlank">Fill in the Blank</option>
+                <option value="TrueFalse">True or False</option>
+            </select>
+            <div id="answer-field"></div>
+
+
             <div>
                 <button type="submit">Create Question</button>
             </div>
@@ -267,6 +279,53 @@
             console.log("Answer element not found for ID: " + answerId);
         }
     }
+</script>
+<script>
+    document.getElementById("type").addEventListener("change", function () {
+        const type = this.value;
+        const answerField = document.getElementById("answer-field");
+        answerField.innerHTML = ""; // Clear previous fields
+
+        if (type === "MultipleChoice" || type === "MultiSelect") {
+            for (let i = 1; i <= 4; i++) {
+                const input = document.createElement("input");
+                input.type = "text";
+                input.name = "options[]";
+                input.placeholder = `Option ${i}`;
+                answerField.appendChild(input);
+            }
+        }
+        else if (type === "TrueFalse") {
+            const ansfield = document.getElementById('answer');
+            ansfield.style.display = 'none';
+            ansfield.innerText = '';
+            const ansLabel = document.getElementById('answer-label');
+            ansLabel.style.display = 'none';
+            const trueOption = document.createElement("input");
+            trueOption.type = "radio";
+            trueOption.name = "answer";
+            trueOption.value = "True";
+            trueOption.id = "true";
+            const trueLabel = document.createElement("label");
+            trueLabel.htmlFor = "true";
+            trueLabel.textContent = "True";
+
+            const falseOption = document.createElement("input");
+            falseOption.type = "radio";
+            falseOption.name = "answer";
+            falseOption.value = "False";
+            falseOption.id = "false";
+            const falseLabel = document.createElement("label");
+            falseLabel.htmlFor = "false";
+            falseLabel.textContent = "False";
+
+            answerField.appendChild(trueOption);
+            answerField.appendChild(trueLabel);
+            answerField.appendChild(falseOption);
+            answerField.appendChild(falseLabel);
+        }
+    });
+
 </script>
 
 </body>

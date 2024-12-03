@@ -8,8 +8,10 @@ public class Question {
     private String questionText;
     private String answer;
     private String description;
-    private List<String> tags = new ArrayList<>(); // Initialize as an empty list
-    private Long userId; // Add userId field to associate the question with a user
+    private List<String> tags = new ArrayList<>();
+    private Long userId;
+    private String type;
+    private List<String> options = new ArrayList<>();
 
     // Getters and setters
     public Long getId() {
@@ -63,4 +65,22 @@ public class Question {
     public void addTag(String tag) {
         this.tags.add(tag);
     }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+
+    public List<String> getOptions() {
+        return options;
+    }
+
+    public void setOptions(List<String> options) {
+        this.options = options;
+    }
+
 }
