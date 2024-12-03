@@ -156,6 +156,7 @@ public class QuestionController {
     public String filterAndSearchQuestions(
             @RequestParam(value = "qText", required = false) String qText,
             @RequestParam(value = "tagFilter", required = false) String tagFilter,
+            @RequestParam(value = "typeFilter", required = false) String typeFilter,
             Model model, HttpSession session) {
 
         Long userId = (Long) session.getAttribute("id");
@@ -166,7 +167,7 @@ public class QuestionController {
         List<Question> filteredQuestions = new ArrayList<>();
 
         // Construct the query dynamically based on provided filters
-        StringBuilder queryBuilder = new StringBuilder("SELECT id, question_text, answer, description, tags FROM questions WHERE user_id = ?");
+        StringBuilder queryBuilder = new StringBuilder("SELECT id, question_text, answer, description, tags, type FROM questions WHERE user_id = ?");
         List<Object> parameters = new ArrayList<>();
         parameters.add(userId);
 
@@ -178,6 +179,11 @@ public class QuestionController {
         if (tagFilter != null && !tagFilter.trim().isEmpty()) {
             queryBuilder.append(" AND tags LIKE ?");
             parameters.add("%" + tagFilter.trim() + "%");
+        }
+
+        if (typeFilter != null && !typeFilter.trim().isEmpty()) {
+            queryBuilder.append(" AND type = ?");
+            parameters.add(typeFilter.trim());
         }
 
         try (Connection connection = DriverManager.getConnection(databaseUrl, databaseUsername, databasePassword);
@@ -195,6 +201,7 @@ public class QuestionController {
                     question.setQuestionText(resultSet.getString("question_text"));
                     question.setAnswer(resultSet.getString("answer"));
                     question.setDescription(resultSet.getString("description"));
+                    question.setType(resultSet.getString("type"));
                     String tagsString = resultSet.getString("tags");
                     if (tagsString != null && !tagsString.isEmpty()) {
                         question.setTags(new ArrayList<>(Arrays.asList(tagsString.split(","))));
