@@ -1,7 +1,6 @@
 package org.group4.quizapp;
 
-import com.theokanning.openai.OpenAiService;
-import com.theokanning.openai.completion.CompletionRequest;
+
 import jakarta.servlet.http.HttpSession;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -14,6 +13,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.ai.chat.ChatClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.prompt.Prompt;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -37,6 +41,14 @@ public class ImportNoteController {
 
     @Value("${openai.api.key}")
     private String openAiApiKey;
+
+    private final ChatClient chatClient;
+
+    @Autowired
+    public ImportNoteController(ChatClient chatClient) {
+        this.chatClient = chatClient;
+    }
+
 
     @GetMapping("/upload-notes")
     public String uploadNotes(HttpSession session, Model model) {
@@ -67,10 +79,19 @@ public class ImportNoteController {
             String fileContent;
             if (file.getOriginalFilename().endsWith(".pdf")) {
                 fileContent = extractTextFromPdf(file);
+                System.out.println("Extracted Notes: " + fileContent);
+
+
+
             } else if (file.getOriginalFilename().endsWith(".docx")) {
                 fileContent = extractTextFromDocx(file);
             } else {
                 fileContent = new String(file.getBytes());
+            }
+
+            if (fileContent == null || fileContent.trim().isEmpty()) {
+                model.addAttribute("errorMessage", "The uploaded file contains no readable text.");
+                return "Import-Notes-Page";
             }
 
             List<Question> generatedQuestions = generateQuestionsFromNotes(fileContent, action);
@@ -107,31 +128,33 @@ public class ImportNoteController {
     }
 
     private List<Question> generateQuestionsFromNotes(String notes, String type) {
-        OpenAiService openAiService = new OpenAiService(openAiApiKey);
-
+        // Prompt for AI to create question
         String prompt = createPromptForType(notes, type);
 
-        CompletionRequest completionRequest = CompletionRequest.builder()
-                .model("gpt-4")
-                .prompt(prompt)
-                .maxTokens(1000)
-                .temperature(0.7)
-                .build();
+        // Prompt being sent to AI
+        Prompt chatPrompt = new Prompt(List.of(
+                new SystemMessage("You are an assistant for generating quiz questions."),
+                new UserMessage(prompt)
+        ));
 
         try {
-            String aiResponse = openAiService.createCompletion(completionRequest)
-                    .getChoices()
-                    .get(0)
-                    .getText();
+            // Call the AI API
+            String aiResponse = chatClient.call(chatPrompt)
+                    .getResult()
+                    .getOutput()
+                    .getContent();
 
-            System.out.println("AI Response: " + aiResponse);
-
+            // Parse the response into Question objects
             return parseGeneratedQuestions(aiResponse, type);
         } catch (Exception e) {
+            //Debugging messages
             e.printStackTrace();
+            System.err.println("Error during AI API call: " + e.getMessage());
             return new ArrayList<>();
         }
     }
+
+
 
     private String createPromptForType(String notes, String type) {
         switch (type.toLowerCase()) {
@@ -140,6 +163,7 @@ public class ImportNoteController {
                         "Based on the following notes, generate 4 flashcard-style questions. " +
                                 "Each question should have a concise question and a precise answer. Use the format:\n" +
                                 "Question: [Your question text]\nAnswer: [Your answer text]\n\nNotes:\n%s", notes);
+
 
             case "multiple choice":
                 return String.format(
