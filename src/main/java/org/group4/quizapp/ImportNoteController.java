@@ -1,6 +1,5 @@
 package org.group4.quizapp;
 
-
 import jakarta.servlet.http.HttpSession;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -59,9 +58,9 @@ public class ImportNoteController {
     }
 
     @PostMapping("/upload-notes")
+
     public String handleUpload(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("action") String action,
             HttpSession session,
             Model model) {
 
@@ -90,11 +89,11 @@ public class ImportNoteController {
             }
 
             if (fileContent == null || fileContent.trim().isEmpty()) {
-                model.addAttribute("errorMessage", "The uploaded file contains no readable text.");
+                model.addAttribute("errorMessage", "The uploaded file text is not readable");
                 return "Import-Notes-Page";
             }
 
-            List<Question> generatedQuestions = generateQuestionsFromNotes(fileContent, action);
+            List<Question> generatedQuestions = generateQuestionsFromNotes(fileContent);
 
             if (generatedQuestions.isEmpty()) {
                 model.addAttribute("errorMessage", "No questions could be generated.");
@@ -103,16 +102,19 @@ public class ImportNoteController {
 
             saveQuestionsToDatabase(generatedQuestions, userId);
 
+
+        //Error messages
             model.addAttribute("successMessage", "Questions have been added to your bank.");
         } catch (IOException e) {
-            model.addAttribute("errorMessage", "Error processing the file: " + e.getMessage());
+            model.addAttribute("fileProcessingError", "Error processing the file: " + e.getMessage());
         } catch (SQLException e) {
-            model.addAttribute("errorMessage", "Database error: " + e.getMessage());
+            model.addAttribute("databaseError", "Database error: " + e.getMessage());
         }
 
         return "Import-Notes-Page";
     }
 
+    //Method to extract text from a pdf file
     private String extractTextFromPdf(MultipartFile file) throws IOException {
         try (PDDocument document = PDDocument.load(file.getInputStream())) {
             PDFTextStripper pdfStripper = new PDFTextStripper();
@@ -120,6 +122,7 @@ public class ImportNoteController {
         }
     }
 
+    //method to extract text from a work document
     private String extractTextFromDocx(MultipartFile file) throws IOException {
         try (XWPFDocument document = new XWPFDocument(file.getInputStream())) {
             XWPFWordExtractor extractor = new XWPFWordExtractor(document);
@@ -127,12 +130,14 @@ public class ImportNoteController {
         }
     }
 
-    private List<Question> generateQuestionsFromNotes(String notes, String type) {
+    private List<Question> generateQuestionsFromNotes(String notes) {
         // Prompt for AI to create question
-        String prompt = createPromptForType(notes, type);
+        String prompt = createPrompt(notes);
 
         // Prompt being sent to AI
         Prompt chatPrompt = new Prompt(List.of(
+                //Communicating to the AI the role it should play, to effectively understand what it is being asked to do
+                //which in this case is generating a question given a type of question
                 new SystemMessage("You are an assistant for generating quiz questions."),
                 new UserMessage(prompt)
         ));
@@ -145,50 +150,25 @@ public class ImportNoteController {
                     .getContent();
 
             // Parse the response into Question objects
-            return parseGeneratedQuestions(aiResponse, type);
+            return parseGeneratedQuestions(aiResponse);
         } catch (Exception e) {
             //Debugging messages
             e.printStackTrace();
             System.err.println("Error during AI API call: " + e.getMessage());
             return new ArrayList<>();
         }
+
+
     }
 
-
-
-    private String createPromptForType(String notes, String type) {
-        switch (type.toLowerCase()) {
-            case "flashcards":
+    private String createPrompt(String notes) {
                 return String.format(
                         "Based on the following notes, generate 4 flashcard-style questions. " +
                                 "Each question should have a concise question and a precise answer. Use the format:\n" +
                                 "Question: [Your question text]\nAnswer: [Your answer text]\n\nNotes:\n%s", notes);
 
-
-            case "multiple choice":
-                return String.format(
-                        "Based on the following notes, generate 4 multiple-choice questions. " +
-                                "Each question should have 4 options labeled (a), (b), (c), (d), and one correct answer. Use the format:\n" +
-                                "Question: [Your question text]\nOptions:\n(a) [Option 1]\n(b) [Option 2]\n(c) [Option 3]\n(d) [Option 4]\nAnswer: [Correct answer]\n\nNotes:\n%s", notes);
-
-            case "fill in the blank":
-                return String.format(
-                        "Based on the following notes, generate 4 fill-in-the-blank questions. " +
-                                "Each question should omit a key term or phrase, which will be the answer. Use the format:\n" +
-                                "Question: [Your question text with a blank]\nAnswer: [Correct answer]\n\nNotes:\n%s", notes);
-
-            case "true or false":
-                return String.format(
-                        "Based on the following notes, generate 4 true or false questions. " +
-                                "Each question should be a statement that is either true or false. Use the format:\n" +
-                                "Statement: [Your statement]\nAnswer: [True/False]\n\nNotes:\n%s", notes);
-
-            default:
-                return "Invalid question type selected.";
-        }
     }
-
-    private List<Question> parseGeneratedQuestions(String aiResponse, String type) {
+    private List<Question> parseGeneratedQuestions(String aiResponse) {
         List<Question> questions = new ArrayList<>();
         if (aiResponse == null || aiResponse.isEmpty()) {
             System.out.println("AI response is empty or null.");
@@ -199,57 +179,16 @@ public class ImportNoteController {
 
         for (String block : blocks) {
             Question question = new Question();
-            question.setType(type);
 
             try {
-                switch (type.toLowerCase()) {
-                    case "flashcards":
-                        String[] qaParts = block.split("Answer:");
+             String[] qaParts = block.split("Answer:");
                         if (qaParts.length < 2) continue;
                         question.setQuestionText(qaParts[0].replace("Question:", "").trim());
                         question.setAnswer(qaParts[1].trim());
-                        break;
 
-                    case "multiple choice":
-                        String[] mcParts = block.split("Options:");
-                        if (mcParts.length < 2) continue;
-                        question.setQuestionText(mcParts[0].replace("Question:", "").trim());
 
-                        String[] optionParts = mcParts[1].split("Answer:");
-                        if (optionParts.length < 2) continue;
-
-                        String[] options = optionParts[0].split("\\) ");
-                        List<String> optionList = new ArrayList<>();
-                        for (String opt : options) {
-                            if (!opt.trim().isEmpty() && opt.length() > 2) {
-                                optionList.add(opt.substring(2).trim());
-                            }
-                        }
-                        question.setOptions(optionList);
-                        question.setAnswer(optionParts[1].trim());
-                        break;
-
-                    case "fill in the blank":
-                        String[] fibParts = block.split("Answer:");
-                        if (fibParts.length < 2) continue;
-                        question.setQuestionText(fibParts[0].replace("Question:", "").trim());
-                        question.setAnswer(fibParts[1].trim());
-                        break;
-
-                    case "true or false":
-                        String[] tfParts = block.split("Answer:");
-                        if (tfParts.length < 2) continue;
-                        question.setQuestionText(tfParts[0].replace("Statement:", "").trim());
-                        question.setAnswer(tfParts[1].trim());
-                        break;
-
-                    default:
-                        continue;
-                }
-
-                question.setDescription("Automatically generated question summary.");
-                question.addTag(type);
-
+                question.setDescription("Automatically generated.");
+                question.addTag("flashcard");
                 questions.add(question);
 
             } catch (Exception e) {

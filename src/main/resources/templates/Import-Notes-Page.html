@@ -158,6 +158,20 @@
             color: white;
         }
     </style>
+
+    <style>
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            width: auto;
+            padding: 12px 20px;
+        }
+    </style>
 </head>
 <body>
 <!-- Navbar -->
@@ -195,12 +209,10 @@
             <input type="text" id="noteTitle" name="title" class="form-control" placeholder="Enter a title for your notes">
         </div>
 
-        <!-- Buttons for specific question types -->
+        <!-- Buttonto generate Flashcard -->
         <div class="btn-container">
             <button type="submit" class="btn" name="action" value="flashcards">Generate Flashcards</button>
-            <button type="submit" class="btn" name="action" value="multiple-choice">Generate Multiple Choice</button>
-            <button type="submit" class="btn" name="action" value="fill-in-the-blank">Generate Fill-in-the-Blank</button>
-            <button type="submit" class="btn" name="action" value="true-or-false">Generate True/False</button>
+
         </div>
     </form>
 </div>
