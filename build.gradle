@@ -21,7 +21,6 @@ java {
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 
-
 dependencies {
     //implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -42,12 +41,10 @@ dependencies {
     implementation 'org.apache.poi:poi:5.2.3'//Docx
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
 
-
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mockito:mockito-core'
 
 }
-
 tasks.named('test') {
     useJUnitPlatform()
 }
