@@ -51,7 +51,8 @@ public class RegisterController {
 
         // Insert the new user into the database
         try (Connection connection = dataSource.getConnection()) {
-            String query = "INSERT INTO users (username, email, password, full_name) VALUES (?, ?, ?, ?)";
+
+            String query = "INSERT INTO public.users (username, email, password, full_name) VALUES (?, ?, ?, ?)";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, user.getUsername());
                 preparedStatement.setString(2, user.getEmail());
@@ -77,7 +78,7 @@ public class RegisterController {
     private boolean usernameExists(String username) {
         // Check if the username already exists in the database
         try (Connection connection = dataSource.getConnection()) {
-            String query = "SELECT COUNT(*) FROM users WHERE username = ?";
+            String query = "SELECT COUNT(*) FROM public.users WHERE username = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, username);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -95,7 +96,7 @@ public class RegisterController {
     private boolean emailExists(String email) {
         // Check if the email already exists in the database
         try (Connection connection = dataSource.getConnection()) {
-            String query = "SELECT COUNT(*) FROM users WHERE email = ?";
+            String query = "SELECT COUNT(*) FROM public.users WHERE username = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, email);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {

@@ -64,7 +64,13 @@ public class HomeController {
 
         model.addAttribute("quizzes", quizzes);
 
+
         return "Home-Page"; // Ensure this matches your Thymeleaf template name
+    }
+  
+  @GetMapping("/import-notes")
+    public String showImportNotesPage() {
+        return "Import-Notes-Page"; // Ensure this matches your Thymeleaf template for importing notes
     }
 }
 
