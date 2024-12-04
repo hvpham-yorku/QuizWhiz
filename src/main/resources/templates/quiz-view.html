@@ -113,6 +113,14 @@
 <div class="container">
     <h1 th:text="${quiz.name}"></h1>
 
+    <!-- Toggle public/private button -->
+    <button id="toggle-public-private"
+            class="btn"
+            th:text="${quiz.public ? 'Make Private' : 'Make Public'}"
+            th:attr="data-quiz-id=${quiz.id}"
+            onclick="togglePublicPrivate()">
+    </button>
+
     <div class="questions">
         <div th:each="question : ${questions}" class="question">
             <h2 th:text="'Question: ' + ${question.questionText}"></h2>
@@ -223,6 +231,33 @@
         result.style.display = 'block';
     }
 
+
+</script>
+
+
+<script>
+    // Function to toggle the public/private status of the quiz
+    function togglePublicPrivate() {
+        const quizId = document.getElementById('toggle-public-private').getAttribute('data-quiz-id');
+        const currentText = document.getElementById('toggle-public-private').innerText;
+
+        fetch(`/create-quiz/quiz/${quizId}/toggle-public`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Toggle button text based on the action
+                    document.getElementById('toggle-public-private').innerText = data.newStatus === 'public' ? 'Make Private' : 'Make Public';
+                } else {
+                    alert("Failed to update quiz visibility.");
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
 </script>
 </body>
