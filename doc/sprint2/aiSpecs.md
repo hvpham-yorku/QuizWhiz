@@ -1,4 +1,4 @@
-# AI API 
+# AI API (APPLICATION PROGRAMMING INTERFACE)
 
 Our web application allows users the ability to upload a PDF or Word document, to have the program automatically generate questions into the 
 user's question bank. We've implemented Artificial Intelligence to automate the process of generating flashcard-style questions, by connecting 
